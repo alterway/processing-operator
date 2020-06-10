@@ -1,0 +1,38 @@
+name: processing-operator-testing
+on:
+  pull_request:
+    branches: [testing]
+    types: [closed, opened, reopened]
+
+jobs:
+  processing-operator-testing:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8']
+
+    steps:
+    - uses: actions/checkout@master
+      name: Login & checkout
+      with:
+        ref: testing
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Test code
+      run: | 
+        pip install tox
+        tox -e py
+
+    - name: Build & push
+      if: github.event.action == 'closed' && github.event.pull_request.merged == true
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: alterwayrnd/processing-operator
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        docker: Dockerfile
+        tags: "latest,testing"
