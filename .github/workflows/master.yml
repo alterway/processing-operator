@@ -34,5 +34,4 @@ jobs:
         name: alterwayrnd/processing-operator
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        docker: Dockerfile
         tags: "latest,master"
